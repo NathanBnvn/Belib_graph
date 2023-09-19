@@ -5,9 +5,9 @@ CONFIG -= qt
 
 SOURCES += \
         ../../cJSON-master/cJSON.c \
-        ../../cJSON-master/cJSON.c \
+        ../../libgd-master/src/gd.c \
         main.cpp
 
 HEADERS += \
     ../../cJSON-master/cJSON.h \
-    ../../cJSON-master/cJSON.h
+    ../../libgd-master/src/gd.h
