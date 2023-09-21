@@ -22,12 +22,11 @@ void create_chart(gdImagePtr chart, int countByDepartement[20])
 
 int main()
 {
-    ifstream file("/home/ajc/Documents/belib.json");
+    ifstream file("../source/belib.json");
     json data = json::parse(file);
     maxCount = end(data) - begin(data);
     int a = 0, b = 0,c = 0,d = 0,e = 0,f = 0,g = 0,h = 0,i = 0,j = 0,
         k = 0,l = 0,m = 0,n = 0,o = 0,p = 0,q = 0,r = 0,s = 0,t = 0;
-    int legend_txt;
     int arrondissements[maxCount];
     for (int i = 0; i < maxCount; i++) {
         if(!data[i]["adresse_station"].empty()){
@@ -146,7 +145,7 @@ int main()
 
     int x = 0;
     int y;
-    char tst[13];
+    char legend_txt[13];
 
     int text_y = 20;
     int text_x = 20;
@@ -161,24 +160,18 @@ int main()
             y = (((countByArrondissements[c]/ 19)) * 360) /100;
             gdImageFilledArc(chart, 250, 250, 250, 250, x, y, colors[c], gdPie);
 
-        }else{
-            cout << "arr" << c << " = 0 \n";
         }
-        //= "10% - 20 Arr";
-        snprintf(tst, 13, "%d%% - %d Arr.", (countByArrondissements[c]*100) / 1991, c+1);
 
+        snprintf(legend_txt, 13, "%d%% - %d Arr.", (countByArrondissements[c]*100) / 1991, c+1);
         gdImageFilledRectangle(chart, 10, color_legend_y, 15, color_legend_y_2, colors[c]);
-        gdImageString(chart, gdFontSmall, text_x, text_y, (unsigned char*)tst, black);
+        gdImageString(chart, gdFontSmall, text_x, text_y, (unsigned char*)legend_txt, black);
         text_y = text_y + 20;
         color_legend_y_2 = color_legend_y_2 + 20;
         color_legend_y = color_legend_y + 20;
     }
 
 
-    // add system to change colors
-
     gdImageSetAntiAliased(chart, gdTrueColorAlpha(255, 0, gdBlueMax, gdAlphaOpaque));
-    gdImageArc(chart, 250, 250, 250, 250, 0, 360, black);
     //x = y;
 
     png_file = fopen("test.png", "wb");
