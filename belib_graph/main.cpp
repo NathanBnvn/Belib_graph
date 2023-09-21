@@ -3,6 +3,7 @@
 #include <nlohmann/json.hpp>
 #include <gd.h>
 #include <gdfonts.h>
+#include <gdfontg.h>
 #include <gdfontl.h>
 
 using namespace std;
@@ -56,17 +57,16 @@ void create_chart(int countByArrondissements[20])
     int colors[20] = {black, yellow, green, grey, navy, sunny_blue, red, pale_yellow, dark_purple, pink, cadet_grey,
                       tyrian_purple, ash_gray, light_coral, plum, rose_ebony, sienna, cam_blue, brigde_blue, olivine};
 
-
-    gdImageSetAntiAliased(chart, gdTrueColorAlpha(255, 0, gdBlueMax, gdAlphaOpaque));
-
     int x = 0;
     int y;
     char legend_txt[13];
+    char title[62] = "Les bornes de Belib dans Paris par arrondissements";
 
-    int text_y = 20;
+    int text_y = 60;
     int text_x = 20;
-    int color_legend_y_2 = 30;
-    int color_legend_y = 25;
+    int color_legend_y_2 = 65;
+    int color_legend_y = 70;
+
 
     for(int c = 0; c < 20; c++){
         if(countByArrondissements[c] > 0) {
@@ -86,9 +86,8 @@ void create_chart(int countByArrondissements[20])
         color_legend_y = color_legend_y + 20;
     }
 
-
+    gdImageString(chart, gdFontGiant, 10, 20, (unsigned char*)title, black);
     gdImageSetAntiAliased(chart, gdTrueColorAlpha(255, 0, gdBlueMax, gdAlphaOpaque));
-    //x = y;
 
     png_file = fopen("../belib_graph/test.png", "wb");
 
