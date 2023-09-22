@@ -21,9 +21,16 @@ De plus, on pourra voir à quel moment de la journée la location est la plus im
 
 ## Utilisation
 Pour télécharger le projet : 
-
 ```sh
   git clone https://github.com/NathanBnvn/Belib_graph.git
 ```
 
-Etant un projet en c++, vous pourrez le compilé via g++.
+Etant un projet en c++, vous pourrez le compilé via g++ :
+```sh
+  g++ -o belib main.cpp
+```
+
+Puis le lancer depuis la ligne de commande :
+```sh
+  ./belib
+```
