@@ -6,6 +6,10 @@ class Belib
 {
 public:
     Belib();
+
+    int count;
+    int adress;
+    int arrondissement;
 };
 
 #endif // BELIB_H

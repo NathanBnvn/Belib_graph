@@ -9,23 +9,18 @@
 using namespace std;
 using json = nlohmann::json;
 
-// Récupérer les données du fichier JSON
-// Générer des graphiques à partir des données
-//
 
-int maxCount;
+int white, green, yellow, red, sunny_blue, grey, navy,
+    pale_yellow, dark_purple, black, pink, olivine,
+    cadet_grey, tyrian_purple, ash_gray,
+    light_coral, plum, rose_ebony,
+    sienna, cam_blue, brigde_blue;
 
-int white, green, yellow, red, sunny_blue, grey, navy, pale_yellow, dark_purple, black, pink, olivine,
-    cadet_grey, tyrian_purple, ash_gray, light_coral, plum, rose_ebony, sienna, cam_blue, brigde_blue;
-
-
-//void create_chart(gdImagePtr chart, int countByDepartement[20])
-//{}
 
 void create_chart(int countByArrondissements[20])
 {
 
-    FILE *png_file;
+    FILE *image_file;
     gdImagePtr chart;
     chart = gdImageCreate(500, 500);
 
@@ -54,8 +49,11 @@ void create_chart(int countByArrondissements[20])
     olivine = gdImageColorAllocate(chart, 171, 181, 87);
 
 
-    int colors[20] = {black, yellow, green, grey, navy, sunny_blue, red, pale_yellow, dark_purple, pink, cadet_grey,
-                      tyrian_purple, ash_gray, light_coral, plum, rose_ebony, sienna, cam_blue, brigde_blue, olivine};
+    int colors[20] = {black, yellow, green, grey, navy, sunny_blue,
+                      red, pale_yellow, dark_purple, pink,
+                      cadet_grey,tyrian_purple, ash_gray,
+                      light_coral, plum, rose_ebony, sienna,
+                      cam_blue, brigde_blue, olivine};
 
     int x = 0;
     int y;
@@ -89,36 +87,31 @@ void create_chart(int countByArrondissements[20])
     gdImageString(chart, gdFontGiant, 10, 20, (unsigned char*)title, black);
     gdImageSetAntiAliased(chart, gdTrueColorAlpha(255, 0, gdBlueMax, gdAlphaOpaque));
 
-    png_file = fopen("../belib_graph/test.png", "wb");
-
-    gdImagePng(chart, png_file);
-    fclose(png_file);
+    image_file = fopen("../belib_graph/graph.png", "wb");
+    gdImagePng(chart, image_file);
+    fclose(image_file);
 
     gdImageDestroy(chart);
 }
 
-int main()
-{
 
-    ifstream file("../source/belib.json");
-    json data = json::parse(file);
+void get_count_by_district(json data, int maxCount){
     maxCount = end(data) - begin(data);
     int a = 0, b = 0,c = 0,d = 0,e = 0,f = 0,g = 0,h = 0,i = 0,j = 0,
         k = 0,l = 0,m = 0,n = 0,o = 0,p = 0,q = 0,r = 0,s = 0,t = 0;
-    int arrondissements[maxCount];
+    int districts[maxCount];
+
     for (int i = 0; i < maxCount; i++) {
         if(!data[i]["adresse_station"].empty()){
-            string str3 = data[i]["adresse_station"].get<std::string>();
+            string adress = data[i]["adresse_station"].get<std::string>();
 
-            str3.erase(str3.begin(), str3.end()-11);
-            str3.erase(str3.begin()+5, str3.end());
+            adress.erase(adress.begin(), adress.end()-11);
+            adress.erase(adress.begin()+5, adress.end());
 
-            arrondissements[i] = stoi(str3);
+            districts[i] = stoi(adress);
         }
 
-        //cout << addresses[i] << "\n";
-
-        switch(arrondissements[i]){
+        switch(districts[i]){
         case 75001:
             a ++;
             break;
@@ -184,52 +177,63 @@ int main()
 
     }
 
-    int countByArrondissements[20] = {a, b, c, d, e, f, g, h, i, j, k, l, m, n, o, p, q, r, s, t};
+    int countByDistricts[20] = {a, b, c, d, e, f, g, h, i, j, k, l, m, n, o, p, q, r, s, t};
 
-    create_chart(countByArrondissements);
-
-    return 0;
+    create_chart(countByDistricts);
 }
 
+void get_status(){
+    int available=0, occupied=0, unknown=0, maintenance=0, planned=0;
+    int  availables[22], occupieds[22], unknowns[22], maintenances[22], planneds[22];
+    int max;
+    char paths[40];
 
+    for(int n = 1; n < 22; n++){
+        snprintf(paths, 40, "../source/september/belib-%d.json", n);
+        string path = paths;
+        ifstream file(path);
+        json data = json::parse(file);
 
-/*
-void set_chart_value(char *name, char *percentage)
-{
-    int n;
-    int x = 0;
-    int y;
+        max = end(data) - begin(data);
 
-    chart = gdImageCreate(500, 500);
-    int perc = *((int*)percentage);
-    y = (perc*360)/100;
+        for (int i = 0; i < max; i++) {
+            string status = data[i]["statut_pdc"].get<std::string>();
+            if(status.empty()){
+                cout << 1 << "\n";
+                return ;
+            }
 
-    // add system to change colors
-    gdImageFilledArc(chart, 250, 250, 250, 250, x, y, navy, gdPie);
-    gdImageArc(chart, 250, 250, 250, 250, 0, 360, black);
-    x = y;
-    printf("%s \n", percentage);
-    create_chart(chart);
+            if(status == "Occupé (en charge)"){
+                occupied = occupied + 1;
 
-}
+            } else if(status == "Disponible"){
+                available = available + 1;
+            } else if(status == "Inconnu") {
+                unknown = unknown + 1;
+            } else if(status == "En maintenance"){
+                maintenance = maintenance + 1;
+            } else if(status == "Mise en service planifiée"){
+                planned = planned + 1;
+            }
+        }
 
-int user_choice(int argc, char *argv[])
-{
-    const char *separators = " ";
-    //char *name_arg = strtok(argv[1], separators);
-    char *perc_arg = strtok(argv[2], separators);
-    //char *color_arg = strtok(argv[3], separators);
-
-    char *name_arg = "4";
-
-    while(perc_arg != NULL){
-        set_chart_value(name_arg, perc_arg);
-        perc_arg = strtok(NULL, separators);
-
-        //name_arg = strtok(NULL, separators);
+        cout << n << " - " << "occupé : " << occupied << "\n";
+        cout << n << " - " << "dispo : " << available << "\n";
+        cout << n << " - " << "maintenance :" << maintenance << "\n";
+        cout << n << " - " << "mise en service :" << planned << "\n";
     }
+}
 
+int main()
+{
+    ifstream file("../source/belib.json");
+    json data = json::parse(file);
+    int maxCount;
+    maxCount = end(data) - begin(data);
+
+    get_count_by_district(data, maxCount);
+    //get_status();
     return 0;
 }
-*/
+
 
